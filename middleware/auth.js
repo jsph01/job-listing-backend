@@ -12,7 +12,6 @@ function authenticate(req, res, next) {
         jwt.verify(token, process.env.SECRET, (err, decoded) => {
             if(!!err) next(err);
             else {
-                console.log(decoded);
                 req.user = decoded.user;
                 next();
             }
