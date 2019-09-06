@@ -18,6 +18,8 @@ app.use(cors());
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/posts', require('./routes/posts'));
+app.use('/api/replies', require('./routes/replies'));
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

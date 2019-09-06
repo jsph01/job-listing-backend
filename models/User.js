@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const beautifyUnique = require('mongoose-beautiful-unique-validation');
+const Schema = mongoose.Schema;
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -24,14 +25,17 @@ const userSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
     bio: String,
-    portraitUrl: String
+    portraitUrl: String,
+    posts: [Schema.Types.ObjectId],
+    replies: [Schema.Types.ObjectId],
+    savedPosts: [Schema.Types.ObjectId]
 });
 
 userSchema.methods.toJSON = function() {
     var obj = this.toObject();
     delete obj.password;
     return obj;
-}
+};
 
 userSchema.plugin(beautifyUnique);
 
