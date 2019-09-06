@@ -38,7 +38,6 @@ function show(req, res) {
     });
 
     populatePost(req.user, foundPost, (populatedPost) => res.json({ post: populatedPost }));
-    //res.json({ post: foundPost });
   });
 }
 

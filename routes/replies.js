@@ -8,6 +8,5 @@ router.get('/:id', repliesCtrl.show);
 
 router.use(auth.authenticate);
 router.post('/', auth.checkAuth, repliesCtrl.create);
-//router.put('/:id', auth.checkAuth, repliesCtrl.update);
 
 module.exports = router;

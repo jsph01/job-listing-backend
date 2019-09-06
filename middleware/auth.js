@@ -1,10 +1,5 @@
 const jwt = require('jsonwebtoken');
 
-// module.exports = (req, res, next) => {
-//     if(req.session.user) return next();
-//     return res.status(401).json({ error: 'not authorized' });
-// };
-
 function authenticate(req, res, next) {
     let token = req.get('Authorization') || req.query.token || req.body.token;
     if(!!token) {

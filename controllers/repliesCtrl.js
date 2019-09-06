@@ -24,11 +24,8 @@ function show(req, res) {
   });
 }
 
-//todo -> author shouldnt reply to his own post
-  //if replier is author then append message to reply
 function create(req, res) {
   Post.findById(req.body.postId, (err, targetPost) => {
-
     if(req.user.username == targetPost.authorUsername) {
       //author is replying to a reply on his post
       Reply.findById(req.body.replyId, (err, reply) => {
