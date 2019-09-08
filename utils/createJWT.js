@@ -5,11 +5,7 @@ module.exports = (user) => {
       user: {
           id: user._id,
           username: user.username,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          zipcode: user.zipcode,
-          portraitUrl: user.portraitUrl
+          zipcode: user.zipcode
       }
   }, process.env.SECRET, { expiresIn: '24h' });
 };

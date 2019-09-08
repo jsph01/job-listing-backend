@@ -24,9 +24,11 @@ function show(req, res) {
   });
 }
 
-function create(req, res) {
+async function create(req, res) {
+  let currentUser = await User.findById(req.user.id);
+
   Post.findById(req.body.postId, (err, targetPost) => {
-    if(req.user.username == targetPost.authorUsername) {
+    if(currentUser.username === targetPost.authorUsername) {
       //author is replying to a reply on his post
       Reply.findById(req.body.replyId, (err, reply) => {
         reply.messages.push({
@@ -37,9 +39,10 @@ function create(req, res) {
         res.json({ reply })
       });
     } else {
-      if(targetPost.replies === []) {
+      let reply = targetPost.replies.find(reply => currentUser.replies.includes(reply) && reply);
+      if(!reply) {
         //user is replying to the post for the first time
-        let reply = {
+        reply = {
           consumerUsername: req.user.username,
           messages: [{
             authorUsername: req.user.username,
@@ -49,10 +52,8 @@ function create(req, res) {
       
         Reply.create(reply, (err, newReply) => {
           if(err) return res.json(({ err }));
-          User.findById(req.user.id, (err, currentUser) => {
-            currentUser.replies.push(newReply);
-            currentUser.save();
-          });
+          currentUser.replies.push(newReply);
+          currentUser.save();
           
           targetPost.replies.push(newReply);
           targetPost.save();
@@ -65,18 +66,13 @@ function create(req, res) {
           authorUsername: req.user.username,
           body: req.body.reply
         };
-        User.findById(req.user.id, async (err, currentUser) => {
-          let reply = targetPost.replies.find(reply => currentUser.replies.includes(reply) && reply);
-          Reply.findById(reply._id, (err, reply) => {
-            reply.messages.push(message);
-            reply.save();
-            res.json({ reply });
-          });
+        Reply.findById(reply._id, (err, reply) => {
+          reply.messages.push(message);
+          reply.save();
+          res.json({ reply });
         });
       }
     }
-
-
   });
 }
 

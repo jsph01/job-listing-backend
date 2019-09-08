@@ -41,7 +41,10 @@ function update(req, res) {
             message: 'mongoose encountered an error',
             error
         });
-        res.status(200).json({ token: createJWT(updatedUser) });
+        res.status(200).json({
+            token: createJWT(updatedUser),
+            user: updatedUser
+        });
     });
 }
 
