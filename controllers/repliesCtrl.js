@@ -76,9 +76,51 @@ async function create(req, res) {
   });
 }
 
+function removeMessage(req, res) {
+  Reply.findById(req.params.id)
+    .then(reply => {
+      let idx = parseInt(req.body.messageIdx);
+      if(req.user.username == reply.messages[idx].authorUsername) {
+        if(reply.messages.length > 1) {
+          reply.messages.splice(idx, 1);
+          reply.save();
+        } else {
+          // 1) remove the reply from the replies collection
+          Reply.findByIdAndRemove(req.params.id)
+            .then(() => {
+              // 2) remove the reply from the user's replies
+              User.findById(req.user.id)
+                .then(user => {
+                  let replyIdx = user.replies.findIndex(reply => reply._id === req.params.id)
+                  user.replies.splice(replyIdx);
+                  user.save();
+                  // 3) remove the reply from the post's replies
+                  Post.findById(req.body.postId)
+                    .then(post => {
+                      let replyIdx = post.replies.findIndex(reply => reply._id === req.params.id);
+                      post.replies.splice(replyIdx, 1);
+                      post.save();
+                      res.json({ message: 'the message was deleted successfully' });
+                    })
+                    .catch(console.log);
+                })
+                .catch(console.log);
+            })
+            .catch(console.log);
+        }
+      } else {
+        res.status(401).json({ message: 'unauthorized' })
+      }
+    })
+    .catch(err => res.json({
+      message: 'mongoose encountered an error',
+      error: err
+    }));
+};
 
 module.exports = {
   index,
   show,
-  create
+  create,
+  removeMessage
 };

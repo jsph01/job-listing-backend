@@ -8,5 +8,6 @@ router.get('/:id', repliesCtrl.show);
 
 router.use(auth.authenticate);
 router.post('/', auth.checkAuth, repliesCtrl.create);
+router.delete('/:id', auth.checkAuth, repliesCtrl.removeMessage);
 
 module.exports = router;

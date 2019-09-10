@@ -1,4 +1,5 @@
 const Post = require('../models/Post');
+const Reply = require('../models/Reply');
 const User = require('../models/User');
 
 function populatePost(reqUser, post, cb) {
@@ -59,25 +60,47 @@ function create(req, res) {
 }
 
 function update(req, res) {
-  Post.findByIdAndUpdate(req.params.id, { new: true}, (err, updatedPost) => {
+  Post.findByIdAndUpdate(req.params.id, req.body.postInfo, { new: true}, (err, updatedPost) => {
     if(err) return res.json({
       message: 'mongoose ran into an error',
       error: err
     });
 
-    res.json({ post: updatePost });
+    res.json({ post: updatedPost });
   });
 }
 
 function remove(req, res) {
-  Post.findByIdAndRemove(req.params.id, (err, removedPost) => {
-    if(err) return res.json({
-      message: 'mongoose ran into an error',
-      error: err
-    });
+  console.log(req.params);
+  Post.findById(req.params.id)
+    .then(async post => {
+        post = await Post.populate(post, { path: 'replies' })
+        User.findById(req.user.id)
+          .then(user => {
+            let postIdx = user.posts.findIndex(post => post._id === req.params.id);
+            user.posts.splice(postIdx, 1);
+            user.save();
 
-    res.json({ post: removedPost });
-  });
+            post.replies.forEach(reply => {
+              console.log(reply)
+              Reply.findByIdAndRemove(reply._id).catch(console.log);
+              User.findOne({ username: reply.consumerUsername })
+                .then(user => {
+                  console.log(user);
+                  replyIdx = user.replies.findIndex(r => r._id === reply._id);
+                  user.replies.splice(replyIdx, 1);
+                  user.save();
+                })
+                .catch(console.log);
+            });
+
+            Post.findByIdAndRemove(req.params.id)
+              .then(deletedPost => res.json({ post: deletedPost}))
+              .catch(console.log);
+          })
+          .catch(console.log)
+    })
+    .catch(console.log);
 }
 
 module.exports = {

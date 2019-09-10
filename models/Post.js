@@ -36,7 +36,7 @@ postSchema.methods.toJSON = function() {
   let post = this.toObject();
   post.replies.forEach((reply, idx) => {
     if(!reply.consumerUsername)
-     post.replies.splice(idx);
+     post.replies.splice(idx, 1);
   });
   return post;
 };
