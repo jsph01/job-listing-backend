@@ -16,8 +16,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/posts', require('./routes/posts'));
 app.use('/api/replies', require('./routes/replies'));
 
-
-app.use(express.static(path(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'build')));
 app.get('*', (req, res) => {
     res.sendFile('index.html');
 });
