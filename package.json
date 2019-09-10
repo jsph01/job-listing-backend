@@ -19,7 +19,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUTION=false npm install --prefix front-end && npm run build --prefix front-end"
   },
   "author": "",
   "license": "ISC"
