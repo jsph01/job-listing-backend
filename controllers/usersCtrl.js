@@ -16,13 +16,17 @@ function show(req, res) {
         message: 'unauthorized'
     });
 
-    User.findById(req.params.id, (error, foundUser) => {
-        if(error) return res.status(500).json({
-            message: 'mongoose encountered an error',
-            error
+    User.findById(req.params.id)
+        .populate('posts')
+        .populate('replies')
+        .exec((error, foundUser) => {
+            if(error) return res.status(500).json({
+                message: 'mongoose encountered an error',
+                error
+            });
+            console.log(foundUser.posts)
+            res.status(200).json({ user: foundUser });
         });
-        res.status(200).json({ user: foundUser });
-    });
 }
 
 function update(req, res) {

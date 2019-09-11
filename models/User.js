@@ -26,8 +26,14 @@ const userSchema = new Schema({
     lastName: String,
     bio: String,
     portraitUrl: String,
-    posts: [Schema.Types.ObjectId],
-    replies: [Schema.Types.ObjectId],
+    posts: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Post'
+    }],
+    replies: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Reply'
+    }],
     savedPosts: [Schema.Types.ObjectId]
 });
 

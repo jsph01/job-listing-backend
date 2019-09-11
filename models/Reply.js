@@ -19,7 +19,11 @@ const replySchema = new Schema({
     type: String,
     required: true
   },
-  messages: [messageSchema]
+  messages: [messageSchema],
+  postId: {
+    type: String,
+    //required: true
+  }
 });
 
 module.exports = mongoose.model('Reply', replySchema)
