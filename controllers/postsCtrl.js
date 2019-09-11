@@ -2,22 +2,32 @@ const Post = require('../models/Post');
 const Reply = require('../models/Reply');
 const User = require('../models/User');
 
+// The Reply schema contains 'consumerUsername' and 'messages' keys.
+// 'messages' is an array of all messages between the post owner and the reply owner.
+// Which replies are visible when you acess a post is based on which user is viewing them.
+
 function populatePost(reqUser, post, cb) {
-  if(reqUser){
-    if(reqUser.username === post.authorUsername) { //post author, view all replies
+  // check if a user is logged in
+  if(!!reqUser) {
+    // check if the author is viewing the post by comparing usernames
+    // side note: reqUser comes directly from a jwt payload,
+      // which means it contains the username without having to look it up in the database
+    if(reqUser.username === post.authorUsername) { // post author, view all replies
       Post.populate(post, { path: 'replies' }).then(post => cb(post));
     } else {
+      // search the post's replies for one which belongs to the request user
       User.findById(reqUser.id, (err, currentUser) => {
         let reply = post.replies.find(reply => currentUser.replies.includes(reply) && reply);
         
-        if(!!reply) Post.populate(post, {
+        // check to see if a reply was found
+        if(!!reply) Post.populate(post, { // reply owner, view just the onw reply (and all messages)
           path: 'replies',
           match: { _id: reply._id }
         }).then(post => cb(post));
-        else cb(post);
+        else cb(post); // unrelated user, view no replies
       });
     }
-  } else cb(post);
+  } else cb(post); // user not logged in, view no replies
 }
 
 function index(req, res) {
@@ -26,7 +36,6 @@ function index(req, res) {
       message: 'mongoose ran into an error',
       error: err
     });
-
     res.json({ posts: allPosts });
   });
 }
