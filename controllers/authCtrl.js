@@ -37,6 +37,7 @@ function login(req, res) {
                 error: err
             });
             if(result) {
+                console.log(foundUser)
                 const token = createJWT(foundUser);
                 return res.status(200).json({
                     message: 'logged in successfully',

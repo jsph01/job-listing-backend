@@ -7,5 +7,5 @@ module.exports = (user) => {
           username: user.username,
           zipcode: user.zipcode
       }
-  }, process.env.SECRET, { expiresIn: '24h' });
+  }, 'Biggie was much better than Tupac', { expiresIn: '24h' });
 };
